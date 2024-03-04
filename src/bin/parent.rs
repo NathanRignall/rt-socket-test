@@ -30,7 +30,7 @@ fn main() {
     let child_control_socket_fd = child_control_socket.into_raw_fd();
 
     // spawn the child process
-    let binary_path = format!("target/release/child");
+    let binary_path = format!("child");
     let mut command = Command::new(binary_path);
     command
         .fd_mappings(vec![
@@ -78,20 +78,20 @@ fn main() {
     let mut times = Vec::new();
 
     let mut last_time;
-    let period = std::time::Duration::from_micros(1_000_000 / 200 as u64);
+    let period = std::time::Duration::from_micros(1_000_000 / 1000 as u64);
 
     // now start looping to test the unix response time.
     let mut i = 0;
     loop {
         last_time = std::time::Instant::now();
 
-        i+=1;
-
         let timestamp = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_micros() as u64;
         times.push((timestamp, control_count));
+
+        i+=1;
 
         control_socket.write_all(&[b'r', control_count]).unwrap();
         control_count += 1;
