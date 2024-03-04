@@ -20,11 +20,10 @@ fn main() {
         }
     }
 
-    // use libc to set the process core affinity to core 1
+    // use libc to set the process core affinity to core 2
     let mut cpu_set: cpu_set_t = unsafe { std::mem::zeroed() };
     unsafe {
-        libc::CPU_ZERO(&mut cpu_set);
-        libc::CPU_SET(1, &mut cpu_set);
+        libc::CPU_SET(2, &mut cpu_set);
         let ret = libc::sched_setaffinity(0, std::mem::size_of_val(&cpu_set), &cpu_set);
         if ret != 0 {
             panic!("Failed to set affinity");
@@ -74,11 +73,10 @@ fn main() {
         }
     }
 
-    // set the core affinity for the child process to core 2
+    // set the core affinity for the child process to core 3
     let mut cpu_set: cpu_set_t = unsafe { std::mem::zeroed() };
     unsafe {
-        libc::CPU_ZERO(&mut cpu_set);
-        libc::CPU_SET(2, &mut cpu_set);
+        libc::CPU_SET(3, &mut cpu_set);
         let ret = libc::sched_setaffinity(child.id() as libc::pid_t, std::mem::size_of_val(&cpu_set), &cpu_set);
         if ret != 0 {
             panic!("Failed to set affinity");
@@ -117,8 +115,6 @@ fn main() {
         times.push((timestamp, control_count));
 
         i+=1;
-
-        println!("Parent: {}", i);
         
         control_socket.write_all(&[b'r', control_count]).unwrap();
         control_count += 1;
