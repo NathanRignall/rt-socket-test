@@ -8,6 +8,9 @@ fn main() {
     let mut child_control_socket = unsafe { UnixStream::from_raw_fd(child_control_socket_fd) };
     let mut child_control_count: u8 = 0 ;
 
+    // set non-blocking
+    child_control_socket.set_nonblocking(true).unwrap();
+
     // acknowledge component init
     child_control_socket
         .write_all(&[b'k'])
@@ -17,9 +20,13 @@ fn main() {
 
     loop {
         let mut buf = [0; 2];
-        child_control_socket
-            .read_exact(&mut buf)
-            .expect("Failed to read from socket");
+        match child_control_socket.read(&mut buf) {
+            Ok(_) => (),
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                continue;
+            }
+            Err(e) => panic!("Failed to read from socket: {}", e),
+        }
 
         if buf[1] != child_control_count {
             panic!("Control count mismatch");
@@ -39,10 +46,6 @@ fn main() {
             }
             b'r' => {
                 // loop for a bit to simulate work
-                let mut i = 0;
-                while i < 1000000 {
-                    i += 1;
-                }
                 child_control_socket
                     .write_all(&[b'k'])
                     .expect("Failed to write to socket");

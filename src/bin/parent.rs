@@ -23,6 +23,9 @@ fn main() {
     let (mut control_socket, child_control_socket) = UnixStream::pair().unwrap();
     let mut control_count = 0;
 
+    // set non-blocking
+    control_socket.set_nonblocking(true).unwrap();
+
     // create fds for the child process
     let child_control_socket_fd = child_control_socket.into_raw_fd();
 
@@ -61,7 +64,13 @@ fn main() {
 
     // wait for the component to be ready
     let mut buffer = [0; 1];
-    control_socket.read_exact(&mut buffer).unwrap();
+    loop {
+        match control_socket.read_exact(&mut buffer) {
+            Ok(_) => break,
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {},
+            Err(e) => panic!("Failed to read from socket: {}", e),
+        }
+    }
     if buffer[0] != b'k' {
         panic!("Failed to start component");
     }
@@ -88,7 +97,13 @@ fn main() {
         control_count += 1;
 
         let mut buffer = [0; 1];
-        control_socket.read_exact(&mut buffer).unwrap();
+        loop {
+            match control_socket.read_exact(&mut buffer) {
+                Ok(_) => break,
+                Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {},
+                Err(e) => panic!("Failed to read from socket: {}", e),
+            }
+        }
 
         if buffer[0] != b'k' {
             panic!("Failed to run");
