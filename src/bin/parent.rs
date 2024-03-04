@@ -16,7 +16,7 @@ fn main() {
             },
         );
         if ret != 0 {
-            panic!("Failed to set scheduler");
+            println!("Failed to set scheduler");
         }
     }
 
@@ -70,7 +70,7 @@ fn main() {
             },
         );
         if ret != 0 {
-            panic!("Failed to set scheduler");
+            println!("Failed to set scheduler");
         }
     }
 
@@ -116,6 +116,8 @@ fn main() {
 
         i+=1;
 
+        println!("Parent: {}", i);
+        
         control_socket.write_all(&[b'r', control_count]).unwrap();
         control_count += 1;
 

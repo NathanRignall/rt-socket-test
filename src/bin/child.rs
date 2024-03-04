@@ -32,6 +32,8 @@ fn main() {
             panic!("Control count mismatch");
         }
 
+        println!("Child received: {:?}", buf[0] as char);
+
         let timestamp = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
