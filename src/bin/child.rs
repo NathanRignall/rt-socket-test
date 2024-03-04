@@ -9,7 +9,7 @@ fn main() {
     let mut child_control_count: u8 = 0 ;
 
     // set non-blocking
-    child_control_socket.set_nonblocking(true).unwrap();
+    child_control_socket.set_nonblocking(false).unwrap();
 
     // acknowledge component init
     child_control_socket
@@ -19,6 +19,9 @@ fn main() {
     let mut times = Vec::new();
 
     println!("Child ready to receive");
+
+    // sleep for 100ms to allow the parent to set up
+    std::thread::sleep(std::time::Duration::from_millis(100));
     
     loop {
         let mut buf = [0; 2];
