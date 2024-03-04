@@ -20,11 +20,9 @@ fn main() {
 
     loop {
         let mut buf = [0; 2];
-        match child_control_socket.read(&mut buf) {
+        match child_control_socket.read_exact(&mut buf) {
             Ok(_) => (),
-            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                continue;
-            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {},
             Err(e) => panic!("Failed to read from socket: {}", e),
         }
 
