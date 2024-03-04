@@ -103,6 +103,8 @@ fn main() {
     let mut last_time;
     let period = std::time::Duration::from_micros(1_000_000 / 500 as u64);
 
+    println!("Parent ready to send");
+
     // now start looping to test the unix response time.
     let mut i = 0;
     loop {

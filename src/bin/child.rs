@@ -18,6 +18,8 @@ fn main() {
 
     let mut times = Vec::new();
 
+    println!("Child ready to receive");
+    
     loop {
         let mut buf = [0; 2];
         loop {
