@@ -21,7 +21,7 @@ fn main() {
 
     // create control and data sockets
     let (mut control_socket, child_control_socket) = UnixStream::pair().unwrap();
-    let control_count = 0;
+    let mut control_count = 0;
 
     // create fds for the child process
     let child_control_socket_fd = child_control_socket.into_raw_fd();
@@ -68,9 +68,14 @@ fn main() {
 
     let mut times = Vec::new();
 
+    let mut last_time;
+    let period = std::time::Duration::from_micros(1_000_000 / 200 as u64);
+
     // now start looping to test the unix response time.
-    let i = 0;
+    let mut i = 0;
     loop {
+        last_time = std::time::Instant::now();
+
         i+=1;
 
         let timestamp = std::time::SystemTime::now()
@@ -91,7 +96,20 @@ fn main() {
 
         // finish after 10,000 iterations
         if i == 10000 {
+            control_socket.write_all(&[b'q', control_count]).unwrap();
             break;
+        }
+
+        let now = std::time::Instant::now();
+        let duration = now.duration_since(last_time);
+
+        if duration < period {
+            std::thread::sleep(period - duration);
+        } else {
+            println!(
+                "Warning: loop took longer than period {}us",
+                duration.as_micros()
+            );
         }
     }
 

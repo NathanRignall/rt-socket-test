@@ -15,7 +15,6 @@ fn main() {
 
     let mut times = Vec::new();
 
-    // do work
     loop {
         let mut buf = [0; 2];
         child_control_socket
@@ -35,7 +34,9 @@ fn main() {
         child_control_count += 1;
 
         match buf[0] {
-            b'q' => break,
+            b'q' => {
+                break;
+            }
             b'r' => {
                 // loop for a bit to simulate work
                 let mut i = 0;
@@ -54,7 +55,7 @@ fn main() {
 
     let mut writer = csv::Writer::from_path("times-child.csv").unwrap();
     for (i, (timestamp, count)) in times.iter().enumerate() {
-        file
+        writer
             .serialize((i, timestamp, count))
             .expect("Failed to write to file");
     }
