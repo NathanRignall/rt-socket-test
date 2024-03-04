@@ -1,6 +1,7 @@
 use std::{io::{Read, Write}, os::{fd::{FromRawFd, IntoRawFd, OwnedFd}, unix::net::UnixStream}, process::{Command, Stdio}};
 
 use command_fds::{CommandFdExt, FdMapping};
+use libc::cpu_set_t;
 
 fn main() {
     println!("Hello, parent!");
@@ -19,6 +20,17 @@ fn main() {
         }
     }
 
+    // use libc to set the process core affinity to core 1
+    let mut cpu_set: cpu_set_t = unsafe { std::mem::zeroed() };
+    unsafe {
+        libc::CPU_ZERO(&mut cpu_set);
+        libc::CPU_SET(1, &mut cpu_set);
+        let ret = libc::sched_setaffinity(0, std::mem::size_of_val(&cpu_set), &cpu_set);
+        if ret != 0 {
+            panic!("Failed to set affinity");
+        }
+    }
+
     // create control and data sockets
     let (mut control_socket, child_control_socket) = UnixStream::pair().unwrap();
     let mut control_count = 0;
@@ -30,7 +42,7 @@ fn main() {
     let child_control_socket_fd = child_control_socket.into_raw_fd();
 
     // spawn the child process
-    let binary_path = format!("child");
+    let binary_path = format!("target/release/child");
     let mut command = Command::new(binary_path);
     command
         .fd_mappings(vec![
@@ -62,6 +74,17 @@ fn main() {
         }
     }
 
+    // set the core affinity for the child process to core 2
+    let mut cpu_set: cpu_set_t = unsafe { std::mem::zeroed() };
+    unsafe {
+        libc::CPU_ZERO(&mut cpu_set);
+        libc::CPU_SET(2, &mut cpu_set);
+        let ret = libc::sched_setaffinity(child.id() as libc::pid_t, std::mem::size_of_val(&cpu_set), &cpu_set);
+        if ret != 0 {
+            panic!("Failed to set affinity");
+        }
+    }
+
     // wait for the component to be ready
     let mut buffer = [0; 1];
     loop {
@@ -78,7 +101,7 @@ fn main() {
     let mut times = Vec::new();
 
     let mut last_time;
-    let period = std::time::Duration::from_micros(1_000_000 / 1000 as u64);
+    let period = std::time::Duration::from_micros(1_000_000 / 500 as u64);
 
     // now start looping to test the unix response time.
     let mut i = 0;
