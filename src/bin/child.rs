@@ -22,7 +22,7 @@ fn main() {
         let mut buf = [0; 2];
         match child_control_socket.read_exact(&mut buf) {
             Ok(_) => (),
-            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {},
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => continue,
             Err(e) => panic!("Failed to read from socket: {}", e),
         }
 
