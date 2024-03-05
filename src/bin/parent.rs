@@ -22,7 +22,7 @@ fn main() {
             0,
             libc::SCHED_FIFO,
             &libc::sched_param {
-                sched_priority: 99,
+                sched_priority: 85,
             },
         );
         if ret != 0 {
@@ -41,7 +41,7 @@ fn main() {
     let child_control_socket_fd = child_control_socket.into_raw_fd();
 
     // spawn the child process
-    let binary_path = format!("target/release/child");
+    let binary_path = format!("child");
     let mut command = Command::new(binary_path);
     command
         .fd_mappings(vec![
@@ -75,7 +75,7 @@ fn main() {
             child.id() as libc::pid_t,
             libc::SCHED_FIFO,
             &libc::sched_param {
-                sched_priority: 98,
+                sched_priority: 80,
             },
         );
         if ret != 0 {
