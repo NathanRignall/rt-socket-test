@@ -22,7 +22,7 @@ fn main() {
             0,
             libc::SCHED_FIFO,
             &libc::sched_param {
-                sched_priority: 85,
+                sched_priority: 99,
             },
         );
         if ret != 0 {
@@ -75,7 +75,7 @@ fn main() {
             child.id() as libc::pid_t,
             libc::SCHED_FIFO,
             &libc::sched_param {
-                sched_priority: 80,
+                sched_priority: 99,
             },
         );
         if ret != 0 {
@@ -102,7 +102,7 @@ fn main() {
     let mut last_sleep = std::time::Duration::from_micros(0);
     let mut last_duration = std::time::Duration::from_micros(0);
     let mut overruns = 0;
-    let period = std::time::Duration::from_micros(1_000_000 / 1000 as u64);
+    let period = std::time::Duration::from_micros(1_000_000 / 100 as u64);
 
     println!("Parent ready to send");
 
@@ -166,7 +166,7 @@ fn main() {
     let mut writer = csv::Writer::from_path("times-parent.csv").unwrap();
     for (i, (timestamp, count, sleep, duration, overruns)) in times.iter().enumerate() {
         writer
-            .serialize((i, timestamp, count, sleep, duration, overruns))
+            .serialize((i, timestamp, sleep, duration, overruns, count))
             .expect("Failed to write to file");
     }
 

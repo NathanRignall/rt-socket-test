@@ -11,6 +11,9 @@ fn main() {
     // set non-blocking
     child_control_socket.set_nonblocking(false).unwrap();
 
+    // sleep for 100ms to allow the parent to set up
+    std::thread::sleep(std::time::Duration::from_millis(100));
+
     // acknowledge component init
     child_control_socket
         .write_all(&[b'k'])
@@ -19,9 +22,6 @@ fn main() {
     let mut times = Vec::new();
 
     println!("Child ready to receive");
-
-    // sleep for 100ms to allow the parent to set up
-    std::thread::sleep(std::time::Duration::from_millis(100));
     
     loop {
         let mut buf = [0; 2];
