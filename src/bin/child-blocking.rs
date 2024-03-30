@@ -31,7 +31,7 @@ fn main() {
         // wait for the parent to signal
         let mut buf = [0; 2];
         match child_control_socket.read_exact(&mut buf) {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(e) => panic!("Failed to read from socket: {}", e),
         }
 
@@ -67,7 +67,7 @@ fn main() {
     println!("Goodbye, child! (Write)");
 
     // write the timestamps to a file
-    let mut writer = csv::Writer::from_path("times-child.csv").unwrap();
+    let mut writer = csv::Writer::from_path("times-child-blocking.csv").unwrap();
     for (i, (timestamp, count)) in times.iter().enumerate() {
         writer
             .serialize((i, timestamp, count))

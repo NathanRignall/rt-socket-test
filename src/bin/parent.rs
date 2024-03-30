@@ -40,7 +40,7 @@ fn main() {
     let mut control_count = 0;
 
     // set non-blocking
-    control_socket.set_nonblocking(false).unwrap();
+    control_socket.set_nonblocking(true).unwrap();
 
     // create fds for the child process
     let child_control_socket_fd = child_control_socket.into_raw_fd();
@@ -150,8 +150,8 @@ fn main() {
             panic!("Failed to run");
         }
 
-        // finish after 50,000 iterations
-        if i == 50000 {
+        // finish after 10,000 iterations
+        if i == 10000 {
             control_socket.write_all(&[b'q', control_count]).unwrap();
             break;
         }

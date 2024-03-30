@@ -15,7 +15,7 @@ fn main() {
     let mut child_control_count: u8 = 0;
 
     // set non-blocking
-    child_control_socket.set_nonblocking(false).unwrap();
+    child_control_socket.set_nonblocking(true).unwrap();
 
     // sleep for 100ms to allow the parent to set up
     std::thread::sleep(std::time::Duration::from_millis(100));

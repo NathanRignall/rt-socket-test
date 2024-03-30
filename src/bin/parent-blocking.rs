@@ -88,7 +88,7 @@ fn main() {
     // wait for the component to be ready
     let mut buffer = [0; 1];
     match control_socket.read_exact(&mut buffer) {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => panic!("Failed to read from socket: {}", e),
     }
     if buffer[0] != b'k' {
@@ -134,16 +134,16 @@ fn main() {
         // wait for the child to signal
         let mut buffer = [0; 1];
         match control_socket.read_exact(&mut buffer) {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(e) => panic!("Failed to read from socket: {}", e),
         }
-        
+
         if buffer[0] != b'k' {
             panic!("Failed to run");
         }
 
-        // finish after 50,000 iterations
-        if i == 50000 {
+        // finish after 10,000 iterations
+        if i == 10000 {
             control_socket.write_all(&[b'q', control_count]).unwrap();
             break;
         }
@@ -172,7 +172,7 @@ fn main() {
     println!("Goodbye, parent! (Write)");
 
     // write the timestamps to a file
-    let mut writer = csv::Writer::from_path("times-parent.csv").unwrap();
+    let mut writer = csv::Writer::from_path("times-parent-blocking.csv").unwrap();
     for (i, (timestamp, count, sleep, duration, overruns)) in times.iter().enumerate() {
         writer
             .serialize((i, timestamp, sleep, duration, overruns, count))
