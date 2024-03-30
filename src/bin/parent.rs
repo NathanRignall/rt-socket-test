@@ -181,9 +181,26 @@ fn main() {
 
     // write the timestamps to a file
     let mut writer = csv::Writer::from_path("times-parent.csv").unwrap();
+    writer
+        .write_record([
+            "Index",
+            "Timestamp",
+            "Sleep",
+            "Duration",
+            "Overruns",
+            "Control Count",
+        ])
+        .unwrap();
     for (i, (timestamp, count, sleep, duration, overruns)) in times.iter().enumerate() {
         writer
-            .serialize((i, timestamp, sleep, duration, overruns, count))
+            .serialize(&[
+                i.to_string(),
+                timestamp.to_string(),
+                sleep.to_string(),
+                duration.to_string(),
+                overruns.to_string(),
+                count.to_string(),
+            ])
             .expect("Failed to write to file");
     }
 
